@@ -1,7 +1,7 @@
 <template>
   <div class="login-container">
     <!-- 导航栏 -->
-    <van-nav-bar class="page-nav-bar" title="登录"/>
+    <van-nav-bar class="page-nav-bar" title="登录" left-arrow @click-left="$router.back()"/>
     <!-- 登录表单 -->
     <van-form ref="loginForm" @submit="onSubmit">
         <van-field
@@ -84,6 +84,7 @@ export default {
             console.log(data)
             this.$store.commit('setUser',data.data)
             this.$toast.success('登录成功')
+            this.$router.back()
           } catch (error) {
             if(error.response.status === 400) {
               this.$toast.fail('手机号或验证码错误')
