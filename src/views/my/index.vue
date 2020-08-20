@@ -8,10 +8,10 @@
           <van-image 
             round
             class="avatar"
-            src="https://img.yzcdn.cn/vant/cat.jpeg"
+            :src="userInfo.photo"
             fit="cover" 
           />
-          <span class="name">黑马头条号</span>
+          <span class="name">{{userInfo.name}}</span>
         </div>
         <div class="right">
           <van-button size="mini" round>编辑资料</van-button>
@@ -19,7 +19,7 @@
       </div>
       <div class="data-stats">
         <div class="data-item">
-          <span class="count">10</span>
+          <span class="count">{{userInfo.art_count}}</span>
           <span class="text">头条</span>
         </div>
         <div class="data-item">
@@ -54,20 +54,49 @@
     <!-- 下半部分 -->
     <van-cell title="消息通知" is-link />
     <van-cell class="mb-9" title="小智同学" is-link />
-    <van-cell v-if="user" class="logout-cell" title="退出登录" />
+    <van-cell v-if="user" class="logout-cell" title="退出登录" clickable @click="onLogout" />
   </div>
 </template>
 
 <script>
 import {mapState} from 'vuex'
+import {getUserInfo} from '@/api/user'
 export default {
   data() {
-    return {}
+    return {
+      userInfo:{}
+    }
   },
   computed:{
     ...mapState(['user'])
   },
-  methods:{}
+  created() {
+    if(this.user) {
+      this.loadUserInfo()
+    }
+  },
+  methods:{
+    onLogout() {
+      this.$dialog.confirm({
+        title:'确认退出吗'
+      })
+       .then( () => {
+         this.$store.commit('setUser',null)
+       })
+       .catch( () => {
+
+       })
+    },
+    async loadUserInfo() {
+      try {
+        const {data} = await getUserInfo()
+        this.userInfo = data.data
+        console.log(data)
+      } catch (error) {
+        this.$toast('获取数据失败，稍后重试')
+      }
+    }
+  }
 }
 </script>
 
