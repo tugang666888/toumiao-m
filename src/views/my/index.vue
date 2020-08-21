@@ -23,15 +23,15 @@
           <span class="text">头条</span>
         </div>
         <div class="data-item">
-          <span class="count">10</span>
+          <span class="count">{{userInfo.follow_count}}</span>
           <span class="text">关注</span>
         </div>
         <div class="data-item">
-          <span class="count">10</span>
+          <span class="count">{{userInfo.fans_count}}</span>
           <span class="text">粉丝</span>
         </div>
         <div class="data-item">
-          <span class="count">10</span>
+          <span class="count">{{userInfo.like_count}}</span>
           <span class="text">获赞</span>
         </div>
       </div>
