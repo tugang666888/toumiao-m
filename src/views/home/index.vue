@@ -22,25 +22,38 @@
           <article-list :channel="channel"></article-list>
         </van-tab>
       <div slot="nav-right" class="placeholder"></div>
-      <div slot="nav-right" class="more-btn">
+      <div slot="nav-right" class="more-btn" @click="isChannelEditShow = true">
         <van-icon name="more-o"></van-icon>
       </div>
     </van-tabs>
+    <!-- 频道编辑弹出层 -->
+    <van-popup
+      v-model="isChannelEditShow"
+      closeable
+      close-icon-position="top-left"
+      position="bottom"
+      :style="{ height: '100%' }"
+    >
+      <channel-edit :my-channels="channels"></channel-edit>
+    </van-popup>
   </div>
 </template>
 
 <script>
 import { getUserChannels } from '@/api/user'
 import ArticleList from './components/article-list'
+import ChannelEdit from './components/channel-edit'
 
 export default {
   components:{
-    ArticleList
+    ArticleList,
+    ChannelEdit
   },
   data() {
     return {
       active:0,
-      channels:[]
+      channels:[],
+      isChannelEditShow:false
     }
   },
   created() {
