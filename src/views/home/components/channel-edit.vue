@@ -5,24 +5,71 @@
         <van-button class="edit-btn" type="danger" plain round size="mini">编辑</van-button>
       </van-cell>
       <van-grid class="my-grid" :gutter="10">
-        <van-grid-item icon="clear" class="grid-item" v-for="(channel,index) in myChannels" :key="index" :text="channel.name" />
+        <van-grid-item icon="clear" class="grid-item" v-for="(channel,index) in myChannels" :key="index">
+            <span slot="text" class="text" :class="{ active: index === active }">{{channel.name}}</span>
+        </van-grid-item>
       </van-grid>
       <!-- 频道推荐 -->
       <van-cell :border="false">
         <div slot="title" class="title-text">频道推荐</div>
       </van-cell>
       <van-grid class="recommend-grid" :gutter="10">
-        <van-grid-item icon="plus" class="grid-item" v-for="value in 8" :key="value" text="文字" />
+        <van-grid-item icon="plus" class="grid-item" v-for="(channel,index) in recommendChannels" :key="index" :text="channel.name" />
       </van-grid>
   </div>
 </template>
 
 <script>
+import { getAllChannels } from '@/api/channel'
+
 export default {
+    data() {
+        return {
+            allChannels:[]
+        }
+    },
     props:{
         myChannels:{
             type:Array,
             required:true
+        },
+        active:{
+            type:Number,
+            required:true
+        }
+    },
+    computed:{
+        recommendChannels() {
+            const channels = []
+            this.allChannels.forEach(channel => {
+                const ret = this.myChannels.find(myChannel => {
+                    return myChannel.id === channel.id
+                })
+                if(!ret) {
+                    channels.push(channel)
+                }
+            })
+            return channels
+
+            // return this.allChannels.filter(channel =>  {
+                //return !this.myChannels.find(myChannel  => {
+                    //return myChannel.id === channel.id
+                //})
+            //})
+        }
+    },
+    created() {
+        this.loadAllChannels()
+    },
+    methods:{
+        async loadAllChannels() {
+            try {
+                const {data} = await getAllChannels()
+                this.allChannels = data.data.channels
+                console.log(this.allChannels)
+            } catch (error) {
+                this.$totast('数据获取失败')
+            }
         }
     }
 }
@@ -48,10 +95,14 @@ export default {
         .van-grid-item__content {
             white-space: nowrap;
             background-color: #f4f5f6;
-            .van-grid-item__text {
+            .van-grid-item__text,
+            .text {
                 font-size: 28px;
                 color: #222;
                 margin-top: 0;
+            }
+            .active {
+                color: red;
             }
         }
     }
