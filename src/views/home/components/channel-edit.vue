@@ -2,11 +2,32 @@
   <div class="channel-edit">
       <van-cell :border="false">
         <div slot="title" class="title-text">我的频道</div>
-        <van-button class="edit-btn" type="danger" plain round size="mini">编辑</van-button>
+        <van-button 
+            class="edit-btn" 
+            type="danger" 
+            plain 
+            round 
+            size="mini" 
+            @click="isEdit = !isEdit"
+        >{{isEdit ? '完成' : '编辑'}}</van-button>
       </van-cell>
       <van-grid class="my-grid" :gutter="10">
-        <van-grid-item icon="clear" class="grid-item" v-for="(channel,index) in myChannels" :key="index">
-            <span slot="text" class="text" :class="{ active: index === active }">{{channel.name}}</span>
+        <van-grid-item 
+            class="grid-item" 
+            v-for="(channel,index) in myChannels" 
+            :key="index"
+            @click="onMyChannelClick(channel,index)"
+        >
+            <van-icon 
+                name="clear" 
+                slot="icon" 
+                v-show="isEdit && !fiexChannels.includes(channel.id)"
+            ></van-icon>
+            <span 
+                slot="text" 
+                class="text" 
+                :class="{ active: index === active }"
+            >{{channel.name}}</span>
         </van-grid-item>
       </van-grid>
       <!-- 频道推荐 -->
@@ -14,7 +35,14 @@
         <div slot="title" class="title-text">频道推荐</div>
       </van-cell>
       <van-grid class="recommend-grid" :gutter="10">
-        <van-grid-item icon="plus" class="grid-item" v-for="(channel,index) in recommendChannels" :key="index" :text="channel.name" />
+        <van-grid-item 
+            icon="plus" 
+            class="grid-item" 
+            v-for="(channel,index) in recommendChannels" 
+            :key="index" 
+            :text="channel.name" 
+            @click="onAddChannel(channel)"
+        />
       </van-grid>
   </div>
 </template>
@@ -25,7 +53,9 @@ import { getAllChannels } from '@/api/channel'
 export default {
     data() {
         return {
-            allChannels:[]
+            allChannels:[],
+            isEdit:false,
+            fiexChannels:[0]
         }
     },
     props:{
@@ -70,6 +100,16 @@ export default {
             } catch (error) {
                 this.$totast('数据获取失败')
             }
+        },
+        onAddChannel(channel) {
+            this.myChannels.push(channel)
+        },
+        onMyChannelClick(channel,index) {
+            if(this.isEdit) {
+                
+            } else {
+                this.$emit('update-active',index)
+            }
         }
     }
 }
@@ -103,6 +143,9 @@ export default {
             }
             .active {
                 color: red;
+            }
+            .van-grid-item__icon-wrapper {
+                position: unset;
             }
         }
     }
