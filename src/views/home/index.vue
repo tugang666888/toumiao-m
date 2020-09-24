@@ -9,6 +9,7 @@
         size="small"
         round
         icon="search"
+        to="/search"
       >搜索</van-button>
     </van-nav-bar>
     <!-- 频道 -->
@@ -43,6 +44,8 @@
 import { getUserChannels } from '@/api/user'
 import ArticleList from './components/article-list'
 import ChannelEdit from './components/channel-edit'
+import { mapState } from 'vuex'
+import { getItem } from '@/utils/storage'
 
 export default {
   components:{
@@ -56,22 +59,38 @@ export default {
       isChannelEditShow:false
     }
   },
+  computed:{
+    ...mapState(['user'])
+  },
   created() {
     this.loadChannels()
   },
   methods:{
     async loadChannels() {
       try {
-        const {data} = await getUserChannels()
-        this.channels = data.data.channels
-        console.log(this.channels)
+        // const {data} = await getUserChannels()
+        // this.channels = data.data.channels
+        let channels = []
+        if(this.user) {
+          const {data} = await getUserChannels()
+          channels = data.data.channels
+        } else {
+          const localChannels = getItem('TOUTIAO_CHANNELS')
+          if(localChannels) {
+            channels = localChannels
+          } else {
+            const {data} = await getUserChannels()
+            channels = data.data.channels
+          }
+        }
+        this.channels = channels
       } catch (error) {
         this.$totast('获取频道数据失败')
       }
     },
-    onUpdateActive(index) {
+    onUpdateActive(index,isChannelEditShow = true) {
       this.active = index
-      this.isChannelEditShow = false
+      this.isChannelEditShow = isChannelEditShow
     }
   }
 }

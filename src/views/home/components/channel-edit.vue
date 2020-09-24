@@ -44,11 +44,13 @@
             @click="onAddChannel(channel)"
         />
       </van-grid>
-  </div>
+  </div>    
 </template>
 
 <script>
-import { getAllChannels } from '@/api/channel'
+import { getAllChannels , addUserChannel , deleteUserChannel } from '@/api/channel'
+import { mapState } from 'vuex'
+import { setItem } from '@/utils/storage'
 
 export default {
     data() {
@@ -69,6 +71,7 @@ export default {
         }
     },
     computed:{
+        ...mapState(['user']),
         recommendChannels() {
             const channels = []
             this.allChannels.forEach(channel => {
@@ -101,14 +104,47 @@ export default {
                 this.$totast('数据获取失败')
             }
         },
-        onAddChannel(channel) {
+        async onAddChannel(channel) {
             this.myChannels.push(channel)
+            if(this.user) {
+                try {
+                    await addUserChannel({
+                    id:channel.id,
+                    seq:this.myChannels.length
+                    })
+                } catch (error) {
+                    this.$totast('保存失败，稍后重试')
+                }
+                
+            } else {
+                setItem('TOUTIAO_CHANNELS',this.myChannels)
+            }
         },
         onMyChannelClick(channel,index) {
             if(this.isEdit) {
-                
+                if(this.fiexChannels.includes(channel.id)) {
+                    return 
+                } 
+                // 删除频道项
+                this.myChannels.splice(index,1)
+                if(index <= this.active) {
+                    this.$emit('update-active',this.active-1,true)
+                }
+                // 数据持久化处理
+                this.deleteChannel(channel)
             } else {
-                this.$emit('update-active',index)
+                this.$emit('update-active',index,false)
+            }
+        },
+        async deleteChannel(channel) {
+            try {
+                if(this.user) {
+                    deleteUserChannel(channel.id) 
+                } else {
+                    setItem('TOUTIAO_CHANNELS',this.myChannels)
+                }
+            } catch (error) {
+                this.$totast('操作失败，稍后重试')
             }
         }
     }

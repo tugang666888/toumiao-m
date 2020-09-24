@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { Popup, CellGroup, PullRefresh, List, Tab, Tabs, Dialog, Button, NavBar, Form, Field, Icon, Toast, CountDown, Tabbar, TabbarItem, Image as VanImage, Grid, GridItem, Cell } from 'vant'
+import { Search, Popup, CellGroup, PullRefresh, List, Tab, Tabs, Dialog, Button, NavBar, Form, Field, Icon, Toast, CountDown, Tabbar, TabbarItem, Image as VanImage, Grid, GridItem, Cell } from 'vant'
 
 
 Vue.use(Button)
@@ -22,3 +22,4 @@ Vue.use(List)
 Vue.use(PullRefresh)
 Vue.use(CellGroup)
 Vue.use(Popup)
+Vue.use(Search)
