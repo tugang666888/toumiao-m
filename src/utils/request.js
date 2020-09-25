@@ -1,6 +1,7 @@
 // 请求模块
 import axios from 'axios'
 import store from '@/store'
+import JSONBig from 'json-bigint'
 
 const request = axios.create({
     baseURL: 'http://ttapi.research.itcast.cn/'
