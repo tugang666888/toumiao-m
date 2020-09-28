@@ -11,23 +11,23 @@
     <div class="main-wrap">
       <!-- 加载中 -->
       <div class="loading-wrap">
-        <van-loading type="spinner" color="#3296fa" vertical></van-loading>
+        <van-loading type="circular" color="#3296fa" vertical>加载中</van-loading>
       </div>
 
       <!-- 加载完成--文章详情 -->
       <div class="article-detail">
         <!-- 文章标题 -->
-        <h1 class="article-title">这是文章标题</h1>
+        <h1 class="article-title">{{article.title}}</h1>
         <van-cell class="user-info" center :border="false">
           <van-image 
             class="avatar"
             slot="icon"
             round
             fit="cover"
-            src="https://img.yzcdn.cn/vant/cat.jpeg"
+            :src="article.aut_photo"
           />
-          <div slot="title" class="user-name">黑马头条号</div>
-          <div slot="label" class="publish-date">14小时前</div>
+          <div slot="title" class="user-name">{{article.aut_name}}</div>
+          <div slot="label" class="publish-date">{{article.pubdate | relativeTime}}</div>
           <van-button
             class="follow-btn"
             type="info"
@@ -38,8 +38,8 @@
           ></van-button>
         </van-cell>
         <!-- 文章内容 -->
-        <div class="article-content">这是文章内容</div>
-        <van-divider>正文结束</van-divider>
+        <div class="article-content" v-html="article.content"></div>
+        <van-divider dashed>正文结束</van-divider>
       </div>
 
       <!-- 加载失败:404 -->
@@ -88,10 +88,16 @@ import { getArticleById } from '@/api/article'
 export default {
   props:{
     articleId:{
-      type:[Number,String],
+      type:[Number,String,Object],
       required:true
     }
   },
+  data() {
+    return {
+      article:{},
+      // loading:true //加载中的loading状态
+    }
+  },  
   created() {
     this.loadArticle()
   },
@@ -99,7 +105,7 @@ export default {
     async loadArticle() {
       try {
         const { data } = await getArticleById(this.articleId)
-        console.log(data)
+        this.article = data.data
       } catch (error) {
         this.$toast('获取数据失败')
       }

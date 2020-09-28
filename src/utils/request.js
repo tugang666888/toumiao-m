@@ -4,7 +4,15 @@ import store from '@/store'
 import JSONBig from 'json-bigint'
 
 const request = axios.create({
-    baseURL: 'http://ttapi.research.itcast.cn/'
+    baseURL: 'http://ttapi.research.itcast.cn/',
+    // 自定义后端返回的原始数据
+    transformResponse: [function(data) {
+        try {
+            return JSONBig.parse(data)
+        } catch (error) {
+            return data
+        }
+    }]
 })
 
 // 请求拦截器
