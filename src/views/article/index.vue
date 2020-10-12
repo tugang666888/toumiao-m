@@ -10,12 +10,12 @@
 
     <div class="main-wrap">
       <!-- 加载中 -->
-      <div class="loading-wrap">
+      <div v-if="loading" class="loading-wrap">
         <van-loading type="circular" color="#3296fa" vertical>加载中</van-loading>
       </div>
 
       <!-- 加载完成--文章详情 -->
-      <div class="article-detail">
+      <div v-else-if="article.title" class="article-detail">
         <!-- 文章标题 -->
         <h1 class="article-title">{{article.title}}</h1>
         <van-cell class="user-info" center :border="false">
@@ -28,64 +28,102 @@
           />
           <div slot="title" class="user-name">{{article.aut_name}}</div>
           <div slot="label" class="publish-date">{{article.pubdate | relativeTime}}</div>
+          <follow-user
+            class="follow-btn"
+            :is-followed="article.is_followed" 
+            :user-id="article.aut_id"
+            @update-is_followed="article.is_followed = $event"
+          />
+          <!-- <van-button 
+            class="follow-btn" 
+            round 
+            size="small" 
+            v-if="article.is_followed"
+            :loading="followLoading"
+            @click="onFollow"  
+          >已关注</van-button>
           <van-button
+            v-else
             class="follow-btn"
             type="info"
             color="#3296fa"
             round
             size="small"
             icon="plus"
-          ></van-button>
+            :loading="followLoading"
+            @click="onFollow"
+          >关注</van-button> --> 
         </van-cell>
         <!-- 文章内容 -->
-        <div class="article-content" v-html="article.content"></div>
+        <div class="article-content markdown-body" v-html="article.content" ref="article-content"></div>
         <van-divider dashed>正文结束</van-divider>
+        <!-- 底部区域 -->
+        <div class="article-bottom">
+          <van-button 
+            class="comment-btn"
+            type="default"
+            round
+            size="small"
+          >写评论</van-button>
+          <van-icon
+            name="comment-o"
+            info="123"
+            color="#777"
+          ></van-icon>
+          <collect-article 
+            class="btn-item" 
+            :article-id="article.art_id"
+            v-model="article.is_collected"
+          />
+          <!-- <van-icon
+            color="#777"
+            name="star-o"
+          /> -->
+          <!-- <van-icon 
+            class="btn-item"
+            color="#777"
+            name="good-job-o"
+          /> -->
+          <like-article 
+            class="btn-item" 
+            v-model="article.attitude"
+            :article-id="article.art_id"
+          />
+          <van-icon name="share" color="#777"></van-icon>
+        </div>
       </div>
 
       <!-- 加载失败:404 -->
-      <div class="error-wrap">
+      <div v-else-if="errStatus === 404" class="error-wrap">
         <van-icon name="failure"></van-icon>
         <p class="text">该资源不存在或已删除</p>
       </div>
 
       <!-- 加载失败，其他未知错误 -->
-      <div class="error-wrap">
+      <div v-else class="error-wrap">
         <van-icon name="failure"></van-icon>
         <p class="text">内容加载失败</p>
-        <van-button class="retry-btn">点击重试</van-button>
+        <van-button class="retry-btn" @click="loadArticle">点击重试</van-button>
       </div>
     </div>
 
-    <!-- 底部区域 -->
-    <div class="article-bottom">
-      <van-button 
-        class="comment-btn"
-        type="default"
-        round
-        size="small"
-      >写评论</van-button>
-      <van-icon
-        name="comment-o"
-        info="123"
-        color="#777"
-      ></van-icon>
-      <van-icon
-        color="#777"
-        name="star-o"
-      />
-      <van-icon 
-        color="#777"
-        name="good-job-o"
-      />
-      <van-icon name="share" color="#777"></van-icon>
-    </div>
+    
   </div>
 </template>
 
 <script>
 import { getArticleById } from '@/api/article'
+import { ImagePreview } from 'vant'
+import FollowUser from '@/components/follow-user'
+import CollectArticle from '@/components/collect-article'
+import LikeArticle from '@/components/like-article'
 
 export default {
+  components:{
+    FollowUser,
+    CollectArticle,
+    LikeArticle
+  },
   props:{
     articleId:{
       type:[Number,String,Object],
@@ -95,7 +133,9 @@ export default {
   data() {
     return {
       article:{},
-      // loading:true //加载中的loading状态
+      loading:true, //加载中的loading状态
+      errStatus:0,
+      followLoading:false
     }
   },  
   created() {
@@ -103,18 +143,43 @@ export default {
   },
   methods:{
     async loadArticle() {
+      this.loading = true
       try {
         const { data } = await getArticleById(this.articleId)
         this.article = data.data
+        // this.loading = false
+        setTimeout(() => {
+          this.previewImage()
+        }, 0)
       } catch (error) {
+        if (err.response && err.response === 404) {
+          this.errStatus = 404
+        }
         this.$toast('获取数据失败')
       }
+        this.loading = false
+    },
+    previewImage() {
+      const articleConent = this.$refs['article-content']
+      const imgs = articleConent.querySelectorAll('img')
+      const images = []
+      imgs.forEach((img,index) => {
+        images.push(img.src)
+        img.onclick = () => {
+          ImagePreview({
+            images,
+            startPosition:index
+          })
+        }
+      })
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
+@import './github-markdown.css';
+
 .article-container {
   .main-wrap {
     position: fixed;
