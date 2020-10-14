@@ -57,6 +57,10 @@
         <!-- 文章内容 -->
         <div class="article-content markdown-body" v-html="article.content" ref="article-content"></div>
         <van-divider dashed>正文结束</van-divider>
+        <comment-list 
+          :source="article.art_id"
+          @onload-success="totalCommentCount = $event.total_count"
+        />
         <!-- 底部区域 -->
         <div class="article-bottom">
           <van-button 
@@ -67,7 +71,7 @@
           >写评论</van-button>
           <van-icon
             name="comment-o"
-            info="123"
+            :info="totalCommentCount"
             color="#777"
           ></van-icon>
           <collect-article 
@@ -117,12 +121,14 @@ import { ImagePreview } from 'vant'
 import FollowUser from '@/components/follow-user'
 import CollectArticle from '@/components/collect-article'
 import LikeArticle from '@/components/like-article'
+import CommentList from './components/comment-list'
 
 export default {
   components:{
     FollowUser,
     CollectArticle,
-    LikeArticle
+    LikeArticle,
+    CommentList
   },
   props:{
     articleId:{
@@ -135,7 +141,8 @@ export default {
       article:{},
       loading:true, //加载中的loading状态
       errStatus:0,
-      followLoading:false
+      followLoading:false,
+      totalCommentCount:0
     }
   },  
   created() {
