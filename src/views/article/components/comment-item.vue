@@ -11,7 +11,8 @@
       <div class="user-name">{{comment.aut_name}}</div>
       <van-button
         class="like-btn"
-        icon="good-job-o"
+        :icon="comment.is_liking ? 'good-job' : 'good-job-o'"
+        :class="{liked:comment.is_liking}"
       >{{comment.like_count > 0 ? comment.like_count : '赞'}}</van-button>
     </div>
 
@@ -96,6 +97,9 @@ export default {
     margin-right: 7px;
     .van-icon {
       font-size: 30px;
+    }
+    &.liked {
+      color: #e5645f;
     }
   }
 }

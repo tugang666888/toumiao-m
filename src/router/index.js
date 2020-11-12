@@ -1,65 +1,70 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-
+import Vue from "vue"
+import VueRouter from "vue-router"
 
 Vue.use(VueRouter)
 
 const routes = [
     // { path: '/', redirect: '/login' },
     {
-        path: '/login',
-        name: 'login',
+        path: "/login",
+        name: "login",
         component: () =>
-            import ('@/views/login')
+            import ("@/views/login"),
     },
     {
-        path: '/',
-        name: 'layout',
+        path: "/",
+        name: "layout",
         component: () =>
-            import ('@/views/layout'),
+            import ("@/views/layout"),
         children: [{
-                path: '', // 留空为默认子路由
-                name: 'home',
+                path: "", // 留空为默认子路由
+                name: "home",
                 component: () =>
-                    import ('@/views/home')
+                    import ("@/views/home"),
             },
             {
-                path: '/qa',
-                name: 'qa',
+                path: "/qa",
+                name: "qa",
                 component: () =>
-                    import ('@/views/qa')
+                    import ("@/views/qa"),
             },
             {
-                path: '/video',
-                name: 'video',
+                path: "/video",
+                name: "video",
                 component: () =>
-                    import ('@/views/video')
+                    import ("@/views/video"),
             },
             {
-                path: '/my',
-                name: 'my',
+                path: "/my",
+                name: "my",
                 component: () =>
-                    import ('@/views/my')
-            }
-        ]
+                    import ("@/views/my"),
+            },
+        ],
     },
     {
-        path: '/search',
-        name: 'search',
+        path: "/search",
+        name: "search",
         component: () =>
-            import ('@/views/search')
+            import ("@/views/search"),
     },
     {
-        path: '/article/:articleId',
-        name: 'article',
+        path: "/article/:articleId",
+        name: "article",
         component: () =>
-            import ('@/views/article'),
-        props: true // 开启props传参
-    }
+            import ("@/views/article"),
+        props: true, // 开启props传参
+    },
+    {
+        path: "/user/profile",
+        name: "user-profile",
+        component: () =>
+            import ("@/views/user-profile"),
+    },
 ]
 
 const router = new VueRouter({
-    routes
+    routes,
 })
 
 export default router
